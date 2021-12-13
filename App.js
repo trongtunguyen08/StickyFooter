@@ -1,16 +1,16 @@
 import React, { useRef, useState } from 'react'
 import {
-  ScrollView,
   StyleSheet,
   View,
   Image,
-  useWindowDimensions,
   Platform,
   StatusBar,
-  Animated
+  Animated,
+  useWindowDimensions
 } from 'react-native'
 import { Paragraph, Title, Headline, Text } from "react-native-paper"
 import { Ionicons } from '@expo/vector-icons'
+
 
 const paragraphs = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`,
@@ -25,13 +25,11 @@ const getImage = (index) => `https://source.unsplash.com/600x${400 + index}/?bla
 
 export default function App() {
   const { width, height } = useWindowDimensions()
-  let IMAGE_WIDTH = width
-  let IMAGE_HEIGHT = height * .45
-
   const scrollY = useRef(new Animated.Value(0)).current
   const [layoutMeasures, setLayoutMeasures] = useState(null)
+  let topEdge = layoutMeasures ? (layoutMeasures?.y - height + layoutMeasures?.height) : height
+  let IMAGE_HEIGHT = height * .45
 
-  const topEdge = layoutMeasures?.y - height + layoutMeasures?.height
   return (
     <View style={styles.container}>
       <StatusBar barStyle='dark-content' translucent backgroundColor='transparent' />
@@ -73,19 +71,17 @@ export default function App() {
             )
           })
         }
+
         <View
+          pointerEvents="none"
           style={{
-            height: 80,
-            backgroundColor: 'red',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: 10
+            height: 80
           }}
-          onLayout={event => {
-            setLayoutMeasures(event.nativeEvent.layout)
+          onLayout={({ nativeEvent }) => {
+            setLayoutMeasures(nativeEvent.layout)
           }}
         />
+
         <View>
           <Title style={{
             fontWeight: 'bold',
@@ -126,26 +122,27 @@ export default function App() {
           }
         </View>
       </Animated.ScrollView>
-      <Animated.View style={{
-        height: 80,
-        backgroundColor: '#FFF',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 20,
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        transform: [
-          {
-            translateY: scrollY.interpolate({
-              inputRange: [-1, 0, topEdge - 1, topEdge, topEdge + 1],
-              outputRange: [0, 0, 0, 0, -1]
-            })
-          }
-        ]
-      }}>
+      <Animated.View
+        style={{
+          height: 80,
+          backgroundColor: '#FFF',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingHorizontal: 20,
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          transform: [
+            {
+              translateY: scrollY.interpolate({
+                inputRange: [-1, 0, topEdge - 1, topEdge, topEdge + 1],
+                outputRange: [0, 0, 0, 0, -1]
+              })
+            }
+          ]
+        }}>
         <View style={{
           flexDirection: 'row',
           alignItems: 'center'
